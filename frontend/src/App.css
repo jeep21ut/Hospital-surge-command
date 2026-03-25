@@ -568,3 +568,23 @@ body {
   border-color: var(--green-dim);
   color: var(--green);
 }
+
+/* ── Print / PDF styles ───────────────────────────────────────────────────── */
+@media print {
+  body { background: #fff; color: #000; }
+  .app-sidebar, .app-header .btn-sm, .playback-controls, .alert-banner { display: none !important; }
+  .app-header {
+    background: #fff; color: #000;
+    border-bottom: 2px solid #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .header-title, .header-sub, .clock-value, .clock-label { color: #000 !important; }
+  .threatcon { border: 1px solid #000; color: #000 !important; background: #fff !important; }
+  .app-main { width: 100% !important; margin: 0 !important; }
+  .dashboard { grid-template-columns: 1fr 1fr 1fr !important; }
+  .panel { background: #fff !important; border: 1px solid #ccc !important; break-inside: avoid; }
+  .panel-title { color: #000 !important; border-color: #ccc !important; }
+  .panel-value, .panel-label { color: #000 !important; }
+  .chart-panel { grid-column: 1 / -1 !important; }
+}
