@@ -195,3 +195,50 @@ class SimResults(BaseModel):
     params:        SimParams
     timeline:      List[HourlySnapshot]
     summary:       SimSummary
+
+
+# ─── Monte Carlo Models ────────────────────────────────────────────────────────
+
+class MonteCarloRequest(BaseModel):
+    params:  SimParams
+    n_runs:  int = Field(default=10, ge=3, le=50,
+                         description="Number of stochastic runs (3–50)")
+
+
+class MCBand(BaseModel):
+    """Per-timestep statistics across N Monte Carlo runs."""
+    time_hours:    float
+    # Census (total patients in system)
+    census_mean:   float
+    census_p10:    float
+    census_p90:    float
+    # Cumulative deaths
+    deaths_mean:   float
+    deaths_p10:    float
+    deaths_p90:    float
+    # Packed RBC stock
+    rbc_mean:      float
+    rbc_p10:       float
+    rbc_p90:       float
+    # Patients waiting for a bed
+    waiting_mean:  float
+    waiting_p10:   float
+    waiting_p90:   float
+
+
+class MonteCarloSummary(BaseModel):
+    total_deaths_mean:     float
+    total_deaths_p10:      float
+    total_deaths_p90:      float
+    peak_census_mean:      float
+    peak_census_p10:       float
+    peak_census_p90:       float
+    gridlock_hours_mean:   float
+    blood_crisis_hours_mean: float
+
+
+class MonteCarloResults(BaseModel):
+    n_runs:  int
+    params:  SimParams
+    bands:   List[MCBand]
+    summary: MonteCarloSummary

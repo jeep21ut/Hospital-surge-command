@@ -8,8 +8,18 @@ import StaffPanel       from './StaffPanel';
 import EvacuationPanel  from './EvacuationPanel';
 import TimelineChart    from './TimelineChart';
 
-export default function Dashboard({ snapshot, timeline, playhead, params }) {
+export default function Dashboard({ snapshot, timeline, playhead, params, compareRuns, mcBands }) {
   const slicedTimeline = timeline.slice(0, playhead + 1);
+
+  // Slice compare timelines to match current playhead
+  const slicedCompare = Array.isArray(compareRuns)
+    ? compareRuns.map(r => ({ ...r, timeline: r.timeline.slice(0, playhead + 1) }))
+    : [];
+
+  // Slice MC bands to match current playhead
+  const slicedMC = Array.isArray(mcBands)
+    ? mcBands.slice(0, playhead + 1)
+    : null;
 
   return (
     <div className="dashboard">
@@ -27,7 +37,11 @@ export default function Dashboard({ snapshot, timeline, playhead, params }) {
       <MarkovPanel snapshot={snapshot} timeline={slicedTimeline} />
 
       {/* Row 4: Timeline chart (full width) */}
-      <TimelineChart timeline={slicedTimeline} />
+      <TimelineChart
+        timeline={slicedTimeline}
+        compareRuns={slicedCompare.length > 0 ? slicedCompare : undefined}
+        mcBands={slicedMC}
+      />
     </div>
   );
 }
