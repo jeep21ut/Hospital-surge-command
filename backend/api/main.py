@@ -10,8 +10,12 @@ Endpoints
 
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import traceback
 
 from simulation.engine import run_simulation
@@ -60,3 +64,24 @@ def simulate(params: SimParams):
         tb = traceback.format_exc()
         raise HTTPException(status_code=500,
                             detail=f"Simulation error: {exc}\n{tb}")
+
+
+# Serve React frontend (built assets) ----------------------------------------
+_BUILD_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../frontend/build")
+)
+
+if os.path.isdir(os.path.join(_BUILD_DIR, "static")):
+    app.mount(
+        "/static",
+        StaticFiles(directory=os.path.join(_BUILD_DIR, "static")),
+        name="react-static",
+    )
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+def serve_spa(full_path: str):
+    index = os.path.join(_BUILD_DIR, "index.html")
+    if os.path.isfile(index):
+        return FileResponse(index)
+    return {"detail": "Frontend not built. Run: cd frontend && npm run build"}
